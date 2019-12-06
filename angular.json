@@ -5,10 +5,10 @@
   "projects": {
     "APM": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": { },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "pm",
+      "prefix": "cq",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -27,7 +27,7 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [ ]
           },
           "configurations": {
             "production": {
@@ -87,7 +87,7 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [ ]
           }
         },
         "lint": {
@@ -116,6 +116,7 @@
           }
         }
       }
-    }},
+    }
+  },
   "defaultProject": "APM"
 }
