@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Product } from './products';
 
 @Component({
   selector: 'cq-products',
@@ -11,7 +12,8 @@ export class ProductListComponent implements OnInit {
   imageWidth: number = 50;
   imageMargin: number = 2;
   listFilter: string = 'cart';
-  products: any[] = [
+  showImage: boolean = true;
+  products: Product[] = [
     {
       productId: 1,
       productName: 'Leaf Rake',
@@ -38,5 +40,9 @@ export class ProductListComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  toggleImage() {
+    this.showImage = !this.showImage;
   }
 }
