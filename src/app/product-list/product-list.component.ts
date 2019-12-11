@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Product } from './products';
+import { Product } from './product';
 
 @Component({
   selector: 'cq-products',
@@ -11,8 +11,9 @@ export class ProductListComponent implements OnInit {
   pageTitle: string = 'Product List';
   imageWidth: number = 50;
   imageMargin: number = 2;
-  listFilter: string = 'cart';
   showImage: boolean = true;
+  private _listFilter: string;
+  filteredProducts: Product[];
   products: Product[] = [
     {
       productId: 1,
@@ -37,12 +38,28 @@ export class ProductListComponent implements OnInit {
   ];
 
   constructor() {
+    this.filteredProducts = this.products;
   }
 
   ngOnInit() {
+    console.log('OnInit was called...');
+  }
+
+  get listFilter(): string {
+    return this._listFilter;
+  }
+
+  set listFilter(value: string) {
+    this._listFilter = value;
+    this.filteredProducts = this.listFilter ? this.performFilter(this.listFilter) : this.products;
   }
 
   toggleImage() {
     this.showImage = !this.showImage;
+  }
+
+  private performFilter(listFilter: string): Product[] {
+    const filteredBy = listFilter.toLocaleLowerCase();
+    return this.products.filter((product: Product) => product.productName.toLocaleLowerCase().includes(filteredBy));
   }
 }
