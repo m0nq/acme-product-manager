@@ -62,4 +62,8 @@ export class ProductListComponent implements OnInit {
     const filteredBy = listFilter.toLocaleLowerCase();
     return this.products.filter((product: Product) => product.productName.toLocaleLowerCase().includes(filteredBy));
   }
+
+  onRatingClicked($event: string) {
+    this.pageTitle = $event;
+  }
 }
