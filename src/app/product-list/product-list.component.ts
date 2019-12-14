@@ -16,13 +16,20 @@ export class ProductListComponent implements OnInit {
   private _listFilter: string;
   filteredProducts: Product[];
   products: Product[];
+  errorMessage: string;
 
   constructor(private productService: ProductService) {
   }
 
   ngOnInit() {
-    this.products = this.productService.getProducts();
-    this.filteredProducts = this.products;
+    this.productService.getProducts$()
+      .subscribe(
+        (products: Product[]) => {
+          this.products = products;
+          this.filteredProducts = this.products;
+        },
+        err => this.errorMessage = err
+      );
   }
 
   get listFilter(): string {
