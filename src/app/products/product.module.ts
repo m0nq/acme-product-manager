@@ -1,19 +1,34 @@
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+
 import { ProductListComponent } from './product-list.component';
-import { ProductDetailComponent } from './product-detail.component';
-import { ConvertToSpacesPipe } from '../shared/convert-to-spaces.pipe';
+import { ProductShellComponent } from './product-list-alt/product-shell.component';
+import { ProductDetailComponent } from './product-list-alt/product-detail.component';
+
 import { SharedModule } from '../shared/shared.module';
-import { ProductRoutingModule } from './product-routing.module';
+import { ProductListAltComponent } from './product-list-alt/product-list-alt.component';
 
 @NgModule({
-  declarations: [
-    ProductListComponent,
-    ProductDetailComponent,
-    ConvertToSpacesPipe
-  ],
   imports: [
     SharedModule,
-    ProductRoutingModule
+    ReactiveFormsModule,
+    RouterModule.forChild([
+      {
+        path: '',
+        component: ProductListComponent
+      },
+      {
+        path: ':alternate',
+        component: ProductShellComponent
+      }
+    ])
+  ],
+  declarations: [
+    ProductListComponent,
+    ProductShellComponent,
+    ProductListAltComponent,
+    ProductDetailComponent
   ]
 })
-export class ProductModule {}
+export class ProductModule { }

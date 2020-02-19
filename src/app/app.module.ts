@@ -1,22 +1,27 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
-import { AppComponent } from './app.component';
+import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { WelcomeComponent } from './home/welcome.component';
+
+// Imports for loading & configuring the in-memory web api
+import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { AppData } from './app-data';
+
 import { AppRoutingModule } from './app-routing.module';
-import { ProductModule } from './products/product.module';
+import { AppComponent } from './app.component';
+import { WelcomeComponent } from './home/welcome.component';
+import { PageNotFoundComponent } from './page-not-found.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    WelcomeComponent
-  ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    ProductModule,
+    InMemoryWebApiModule.forRoot(AppData, { delay: 1000 }),
     AppRoutingModule
+  ],
+  declarations: [
+    AppComponent,
+    WelcomeComponent,
+    PageNotFoundComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+
+import { Subscription } from 'rxjs';
+
 import { Product } from './product';
 import { ProductService } from './product.service';
 
@@ -6,52 +9,33 @@ import { ProductService } from './product.service';
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css']
 })
-export class ProductListComponent implements OnInit {
+export class ProductListComponent implements OnInit, OnDestroy {
+  pageTitle = 'Product List';
+  errorMessage = '';
+  categories;
 
-  pageTitle: string = 'Product List';
-  imageWidth: number = 50;
-  imageMargin: number = 2;
-  showImage: boolean = true;
-  private _listFilter: string;
-  filteredProducts: Product[];
-  products: Product[];
-  errorMessage: string;
+  products: Product[] = [];
+  sub: Subscription;
 
-  constructor(private productService: ProductService) {
-  }
+  constructor(private productService: ProductService) { }
 
-  ngOnInit() {
-    this.productService.getProducts$()
+  ngOnInit(): void {
+    this.sub = this.productService.getProducts()
       .subscribe(
-        (products: Product[]) => {
-          this.products = products;
-          this.filteredProducts = this.products;
-        },
-        err => this.errorMessage = err
+        products => this.products = products,
+        error => this.errorMessage = error
       );
   }
 
-  get listFilter(): string {
-    return this._listFilter;
+  ngOnDestroy(): void {
+    this.sub.unsubscribe();
   }
 
-  set listFilter(value: string) {
-    this._listFilter = value;
-    this.filteredProducts = this.listFilter ?
-      this.performFilter(this.listFilter) :
-      this.products;
+  onAdd(): void {
+    console.log('Not yet implemented');
   }
 
-  toggleImage() {
-    this.showImage = !this.showImage;
-  }
-
-  private performFilter(listFilter: string): Product[] {
-    const filteredBy = listFilter.toLocaleLowerCase();
-    return this.products.filter((product: Product) => product.productName.toLocaleLowerCase().includes(filteredBy));
-  }
-
-  onRatingClicked($event: string) {
-    this.pageTitle = $event;
+  onSelected(categoryId: string): void {
+    console.log('Not yet implemented');
   }
 }

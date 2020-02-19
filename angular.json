@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "APM": {
+    "acme-product-manager": {
       "projectType": "application",
       "schematics": { },
       "root": "",
@@ -13,16 +13,15 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/APM",
+            "aot": true,
+            "outputPath": "dist/acme-product-manager",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "aot": false,
             "assets": [
               "src/favicon.ico",
-              "src/assets",
-              "src/api"
+              "src/assets"
             ],
             "styles": [
               "src/styles.css"
@@ -51,6 +50,10 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ]
             }
@@ -59,18 +62,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "APM:build"
+            "browserTarget": "acme-product-manager:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "APM:build:production"
+              "browserTarget": "acme-product-manager:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "APM:build"
+            "browserTarget": "acme-product-manager:build"
           }
         },
         "test": {
@@ -107,16 +110,19 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "APM:serve"
+            "devServerTarget": "acme-product-manager:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "APM:serve:production"
+              "devServerTarget": "acme-product-manager:serve:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "APM"
+  "defaultProject": "acme-product-manager",
+  "cli": {
+    "analytics": "5f2287ba-9faa-4f04-afb6-cb48a3446bd9"
+  }
 }

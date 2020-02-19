@@ -1,59 +1,55 @@
 <div class="card">
-  <div class="card-header">{{pageTitle}}</div>
+  <div class="card-header">
+    {{pageTitle}}
+  </div>
+
   <div class="card-body">
-    <div class="row">
-      <div class="col-md-2">Filter by</div>
-      <div class="col-md-4">
-        <input type="text" [(ngModel)]="listFilter">
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6">
-        <h4>Filtered by: {{listFilter}}</h4>
+    <div class="container">
+      <div class="row justify-content-between">
+        <div class="col-3">
+          <select class="form-control"
+                  (change)="onSelected($event.target.value)">
+            <option value="0">- Display All -</option>
+            <option *ngFor="let category of categories"
+                    [value]="category.id">{{ category.name }}</option>
+          </select>
+        </div>
+        <div class="col-2">
+          <button type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="onAdd()">Add Product</button>
+        </div>
       </div>
     </div>
 
     <div class="table-responsive">
-      <table class="table" *ngIf="filteredProducts && filteredProducts.length">
+      <table class="table mb-0"
+             *ngIf="products">
         <thead>
           <tr>
-            <th>
-              <button class="btn btn-primary" (click)="toggleImage()">
-                {{showImage ? 'Hide' : 'Show'}} Image
-              </button>
-            </th>
             <th>Product</th>
             <th>Code</th>
-            <th>Available</th>
+            <th>Category</th>
             <th>Price</th>
-            <th>5 Star Rating</th>
+            <th>In Stock</th>
           </tr>
         </thead>
-        <tbody>
-          <tr *ngFor="let product of products">
-            <td>
-              <img *ngIf="showImage" [src]="product.imageUrl"
-                   [alt]="product.description"
-                   [title]="product.productName"
-                   [style.width.px]="imageWidth"
-                   [style.margin.px]="imageMargin">
-            </td>
-            <td>
-              <a [routerLink]="['/products', product.productId]">
-                {{product.productName}}
-              </a>
-            </td>
-            <td>{{product.productCode | lowercase | convertToSpaces: '-'}}</td>
-            <td>{{product.releaseDate}}</td>
-            <td>{{product.price | currency: 'USD' : 'symbol' : '1.2-2'}}</td>
-            <td>
-              <cq-star [rating]="product.starRating"
-                       (ratingClicked)="onRatingClicked($event)"></cq-star>
-            </td>
+        <tbody *ngFor="let product of products">
+          <tr>
+            <td>{{ product.productName }}</td>
+            <td>{{ product.productCode }}</td>
+            <td>{{ product.categoryId }}</td>
+            <td>{{ product.price | currency:"USD":"symbol":"1.2-2" }}</td>
+            <td>{{ product.quantityInStock }}</td>
           </tr>
         </tbody>
       </table>
     </div>
+
   </div>
 </div>
 
+<div class="alert alert-danger"
+     *ngIf="errorMessage">
+  {{ errorMessage }}
+</div>

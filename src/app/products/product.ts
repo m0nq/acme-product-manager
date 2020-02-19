@@ -1,10 +1,12 @@
+/* Defines the product entity */
 export interface Product {
-  productId: number;
+  id: number;
   productName: string;
-  productCode: string;
-  releaseDate: string;
-  description: string;
-  price: number;
-  starRating: number;
-  imageUrl: string;
+  productCode?: string;
+  description?: string;
+  price?: number;
+  categoryId?: number;
+  quantityInStock?: number;
+  searchKey?: string[];
+  supplierIds?: number[];
 }
