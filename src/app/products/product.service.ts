@@ -24,14 +24,13 @@ export class ProductService {
     this.products$,
     this.productCategoryService.productCategories$
   ]).pipe(
-    map(([products, categories]) => {
-      return products.map(product => ({
+    map(([products, categories]) =>
+      products.map(product => ({
         ...product,
         price: product.price * 1.5,
         category: categories.find(r => product.categoryId === r.id).name,
         searchKey: [product.productName]
-      }) as Product);
-    })
+      }) as Product))
   );
 
   constructor(private http: HttpClient,
