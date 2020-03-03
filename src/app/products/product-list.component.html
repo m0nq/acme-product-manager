@@ -15,8 +15,7 @@
           </select>
         </div>
         <div class="col-2">
-          <button type="button"
-                  class="btn btn-outline-secondary"
+          <button type="button" class="btn btn-outline-secondary"
                   (click)="onAdd()">Add Product
           </button>
         </div>
@@ -51,6 +50,6 @@
 </div>
 
 <div class="alert alert-danger"
-     *ngIf="errorMessage">
+     *ngIf="(errorMessage$ | async) as errorMessage">
   {{ errorMessage }}
 </div>
