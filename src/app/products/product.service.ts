@@ -4,6 +4,7 @@ import { merge } from 'rxjs';
 import { Subject } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 import { combineLatest, throwError } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import { scan } from 'rxjs/operators';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ProductCategoryService } from '../product-categories/product-category.service';
@@ -34,7 +35,9 @@ export class ProductService {
         price: product.price * 1.5,
         category: categories.find(r => product.categoryId === r.id).name,
         searchKey: [product.productName]
-      }) as Product))
+      }) as Product)
+    ),
+    shareReplay(1)
   );
 
   private productSelectedSubject = new BehaviorSubject<number>(0);
@@ -47,7 +50,8 @@ export class ProductService {
     map(([products, selectedProductId]) =>
       products.find(product => product.id === selectedProductId)
     ),
-    tap(product => console.log(`selectedProduct -> ${product}`))
+    tap(product => console.log(`selectedProduct -> ${product}`)),
+    shareReplay(1)
   );
 
   private productInsertedSubject = new Subject<Product>();
