@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { merge } from 'rxjs';
-import { Subject } from 'rxjs';
-import { BehaviorSubject } from 'rxjs';
-import { combineLatest, throwError } from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
-import { scan } from 'rxjs/operators';
-import { catchError, map, tap } from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  combineLatest,
+  merge,
+  Subject,
+  throwError
+} from 'rxjs';
+import { catchError, map, scan, shareReplay, tap } from 'rxjs/operators';
 import { ProductCategoryService } from '../product-categories/product-category.service';
 import { SupplierService } from '../suppliers/supplier.service';
 
@@ -50,7 +51,7 @@ export class ProductService {
     map(([products, selectedProductId]) =>
       products.find(product => product.id === selectedProductId)
     ),
-    tap(product => console.log(`selectedProduct -> ${product}`)),
+    tap(product => console.log('selectedProduct ->', product)),
     shareReplay(1)
   );
 
@@ -62,6 +63,13 @@ export class ProductService {
     this.productInsertedAction$
   ).pipe(
     scan((acc: Product[], value: Product) => [...acc, value])
+  );
+
+  selectedProductSuppliers$ = combineLatest([
+    this.selectedProduct$,
+    this.supplierService.suppliers$
+  ]).pipe(
+    map(([selectedProduct, suppliers]) => suppliers.filter(supplier => selectedProduct.supplierIds.includes(supplier.id)))
   );
 
   constructor(private http: HttpClient,
