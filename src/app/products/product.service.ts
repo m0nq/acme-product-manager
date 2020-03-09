@@ -9,11 +9,13 @@ import {
   throwError
 } from 'rxjs';
 import {
-  catchError, filter,
+  catchError,
+  filter,
   map,
   mergeMap,
   scan,
-  shareReplay, switchMap,
+  shareReplay,
+  switchMap,
   tap,
   toArray
 } from 'rxjs/operators';
