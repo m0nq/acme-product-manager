@@ -1,34 +1,25 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
-
-import { ProductListComponent } from './product-list.component';
-import { ProductShellComponent } from './product-list-alt/product-shell.component';
-import { ProductDetailComponent } from './product-list-alt/product-detail.component';
+import { RouterModule, Routes } from '@angular/router';
 
 import { SharedModule } from '../shared/shared.module';
-import { ProductListAltComponent } from './product-list-alt/product-list-alt.component';
+
+import { ProductShellComponent } from './product-shell/product-shell.component';
+import { ProductListComponent } from './product-list/product-list.component';
+import { ProductEditComponent } from './product-edit/product-edit.component';
+
+const productRoutes: Routes = [
+  { path: '', component: ProductShellComponent }
+];
 
 @NgModule({
   imports: [
     SharedModule,
-    ReactiveFormsModule,
-    RouterModule.forChild([
-      {
-        path: '',
-        component: ProductListComponent
-      },
-      {
-        path: ':alternate',
-        component: ProductShellComponent
-      }
-    ])
+    RouterModule.forChild(productRoutes)
   ],
   declarations: [
-    ProductListComponent,
     ProductShellComponent,
-    ProductListAltComponent,
-    ProductDetailComponent
+    ProductListComponent,
+    ProductEditComponent
   ]
 })
 export class ProductModule { }

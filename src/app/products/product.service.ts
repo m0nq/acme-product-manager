@@ -1,126 +1,101 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  from,
-  merge,
-  Subject,
-  throwError
-} from 'rxjs';
-import {
-  catchError,
-  filter,
-  map,
-  mergeMap,
-  scan,
-  shareReplay,
-  switchMap,
-  tap,
-  toArray
-} from 'rxjs/operators';
-import { ProductCategoryService } from '../product-categories/product-category.service';
-import { Supplier } from '../suppliers/supplier';
-import { SupplierService } from '../suppliers/supplier.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { Observable, of, BehaviorSubject, throwError } from 'rxjs';
+import { catchError, tap, map } from 'rxjs/operators';
 
 import { Product } from './product';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
   private productsUrl = 'api/products';
-  private suppliersUrl = this.supplierService.suppliersUrl;
+  private products: Product[];
 
-  products$ = this.http.get<Product[]>(this.productsUrl)
-    .pipe(
-      tap(data => console.log(`Products -> ${JSON.stringify(data)}`)),
-      catchError(this.handleError)
-    );
+  private selectedProductSource = new BehaviorSubject<Product | null>(null);
+  selectedProductChanges$ = this.selectedProductSource.asObservable();
 
-  productsWithCategory$ = combineLatest([
-    this.products$,
-    this.productCategoryService.productCategories$
-  ]).pipe(
-    map(([products, categories]) =>
-      products.map(product => ({
-        ...product,
-        price: product.price * 1.5,
-        category: categories.find(r => product.categoryId === r.id).name,
-        searchKey: [product.productName]
-      }) as Product)
-    ),
-    shareReplay(1)
-  );
+  constructor(private http: HttpClient) { }
 
-  private productSelectedSubject = new BehaviorSubject<number>(0);
-  productSelectedAction$ = this.productSelectedSubject.asObservable();
-
-  selectedProduct$ = combineLatest([
-    this.productsWithCategory$,
-    this.productSelectedAction$
-  ]).pipe(
-    map(([products, selectedProductId]) =>
-      products.find(product => product.id === selectedProductId)
-    ),
-    tap(product => console.log('selectedProduct ->', product)),
-    shareReplay(1)
-  );
-
-  private productInsertedSubject = new Subject<Product>();
-  productInsertedAction$ = this.productInsertedSubject.asObservable();
-
-  productsWithAdd$ = merge(
-    this.productsWithCategory$,
-    this.productInsertedAction$
-  ).pipe(
-    scan((acc: Product[], value: Product) => [...acc, value])
-  );
-
-  // selectedProductSuppliers$ = combineLatest([
-  //   this.selectedProduct$,
-  //   this.supplierService.suppliers$
-  // ]).pipe(
-  //   map(([selectedProduct, suppliers]) => suppliers.filter(supplier => selectedProduct.supplierIds.includes(supplier.id)))
-  // );
-
-  selectedProductSuppliers$ = this.selectedProduct$
-    .pipe(
-      filter(selectedProduct => Boolean(selectedProduct)),
-      switchMap(selectedProduct => from(selectedProduct.supplierIds)
-        .pipe(
-          mergeMap(supplierId => this.http.get<Supplier>(`${this.suppliersUrl}/${supplierId}`)),
-          toArray(),
-          tap(suppliers => console.log(`product suppliers -> ${JSON.stringify(suppliers)}`))
-        )));
-
-  constructor(private http: HttpClient,
-              private productCategoryService: ProductCategoryService,
-              private supplierService: SupplierService) {}
-
-  selectedProductChanged(productId: number): void {
-    this.productSelectedSubject.next(productId);
+  changeSelectedProduct(selectedProduct: Product | null): void {
+    this.selectedProductSource.next(selectedProduct);
   }
 
-  addProduct(newProduct?: Product) {
-    newProduct = newProduct || this.fakeProduct();
-    this.productInsertedSubject.next(newProduct);
+  getProducts(): Observable<Product[]> {
+    if (this.products) {
+      return of(this.products);
+    }
+    return this.http.get<Product[]>(this.productsUrl)
+      .pipe(
+        tap(data => console.log(JSON.stringify(data))),
+        tap(data => this.products = data),
+        catchError(this.handleError)
+      );
   }
 
-  private fakeProduct() {
+  // Return an initialized product
+  newProduct(): Product {
     return {
-      id: 42,
-      productName: 'Another One',
-      productCode: 'TBX-0042',
-      description: 'Our new product',
-      price: 8.9,
-      categoryId: 3,
-      category: 'Toolbox',
-      quantityInStock: 30
+      id: 0,
+      productName: '',
+      productCode: 'New',
+      description: '',
+      starRating: 0
     };
   }
 
-  private handleError(err: any) {
+  createProduct(product: Product): Observable<Product> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    product.id = null;
+    return this.http.post<Product>(this.productsUrl, product, { headers })
+      .pipe(
+        tap(data => console.log('createProduct: ' + JSON.stringify(data))),
+        tap(data => {
+          this.products.push(data);
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  deleteProduct(id: number): Observable<{}> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const url = `${this.productsUrl}/${id}`;
+    return this.http.delete<Product>(url, { headers })
+      .pipe(
+        tap(data => console.log('deleteProduct: ' + id)),
+        tap(data => {
+          const foundIndex = this.products.findIndex(item => item.id === id);
+          if (foundIndex > -1) {
+            this.products.splice(foundIndex, 1);
+          }
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  updateProduct(product: Product): Observable<Product> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const url = `${this.productsUrl}/${product.id}`;
+    return this.http.put<Product>(url, product, { headers })
+      .pipe(
+        tap(() => console.log('updateProduct: ' + product.id)),
+        // Update the item in the list
+        // This is required because the selected product that was edited
+        // was a copy of the item from the array.
+        tap(() => {
+          const foundIndex = this.products.findIndex(item => item.id === product.id);
+          if (foundIndex > -1) {
+            this.products[foundIndex] = product;
+          }
+        }),
+        // Return the product on an update
+        map(() => product),
+        catchError(this.handleError)
+      );
+  }
+
+  private handleError(err) {
     // in a real world app, we may send the server to some remote logging infrastructure
     // instead of just logging it to the console
     let errorMessage: string;
@@ -135,4 +110,5 @@ export class ProductService {
     console.error(err);
     return throwError(errorMessage);
   }
+
 }
