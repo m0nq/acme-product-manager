@@ -1,4 +1,4 @@
-export function reducer(state, action) {
+export function productsReducer(state, action) {
   switch (action.type) {
 
     case 'TOGGLE_PRODUCT_CODE':
