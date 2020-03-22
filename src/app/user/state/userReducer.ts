@@ -1,3 +1,10 @@
+import { User } from '../user';
+
+export interface UserState {
+  maskUserName: boolean;
+  user: User;
+}
+
 export function userReducer(state, action) {
   switch (action.type) {
 
