@@ -7,8 +7,8 @@ import { NumberValidators } from '../../shared/number.validator';
 
 import { Product } from '../product';
 import { ProductService } from '../product.service';
-import * as fromProduct from '../state/product.reducer';
 import * as productActions from '../state/product.actions';
+import * as fromProduct from '../state/product.reducer';
 
 @Component({
   selector: 'cq-product-edit',
